@@ -43,7 +43,7 @@ plugins:
 custom:
   alexa:
     skills:
-      - id: ${env:YOUR_ALEXA_SKILL_ID}
+      - id: ${env:YOUR_ALEXA_SKILL_ID} # Optional - If omitted, publishingInformation names will be used to locate the skill
         skillManifest:
           publishingInformation:
             locales:
