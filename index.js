@@ -23,7 +23,11 @@ const outputModelsDiff = require('./lib/outputModelsDiff');
 const updateModels = require('./lib/updateModels');
 const outputUpdatedModels = require('./lib/outputUpdatedModels');
 const excludeTokenFile = require('./lib/excludeTokenFile');
-
+const getRemoteAccountLinkings = require('./lib/getRemoteAccountLinkings');
+const diffAccountLinkings = require('./lib/diffAccountLinkings');
+const outputAccountLinkingsDiff = require('./lib/outputAccountLinkingsDiff');
+const updateAccountLinkings = require('./lib/updateAccountLinkings');
+const outputUpdatedAccountLinkings = require('./lib/outputUpdatedAccountLinkings');
 
 class AlexaSkills {
   constructor(serverless, options) {
@@ -54,7 +58,12 @@ class AlexaSkills {
       outputModelsDiff,
       updateModels,
       outputUpdatedModels,
-      excludeTokenFile
+      excludeTokenFile,
+      getRemoteAccountLinkings,
+      diffAccountLinkings,
+      outputAccountLinkingsDiff,
+      updateAccountLinkings,
+      outputUpdatedAccountLinkings
     );
 
     this.commands = {
@@ -176,7 +185,17 @@ class AlexaSkills {
           }
           return BbPromise.resolve();
         })
-        .then(this.outputUpdatedSkillIds),
+        .then(this.outputUpdatedSkillIds)
+        .then(this.getRemoteAccountLinkings)
+        .then(this.diffAccountLinkings)
+        .then(this.outputAccountLinkingsDiff)
+        .then(function (diffs) {
+          if (!('dryRun' in this.options)) {
+            return this.updateAccountLinkings(diffs);
+          }
+          return BbPromise.resolve();
+        })
+        .then(this.outputUpdatedAccountLinkings),
       'alexa:build:build': () => BbPromise.bind(this)
         .then(this.initialize)
         .then(this.getRemoteModels)
