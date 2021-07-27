@@ -71,79 +71,71 @@ class AlexaSkills {
         commands: {
           auth: {
             usage: 'Authenticate with Amazon OAuth2',
-            lifecycleEvents: [
-              'auth',
-            ],
+            lifecycleEvents: ['auth'],
           },
           manifests: {
             usage: 'List your Alexa Skill Manifests',
-            lifecycleEvents: [
-              'list',
-            ],
+            lifecycleEvents: ['list'],
           },
           models: {
             usage: 'List your Alexa Interaction Models',
-            lifecycleEvents: [
-              'list',
-            ],
+            lifecycleEvents: ['list'],
           },
           create: {
             usage: 'Create an Alexa Skill',
-            lifecycleEvents: [
-              'create',
-            ],
+            lifecycleEvents: ['create'],
             options: {
               name: {
                 usage: 'Name of the skill',
                 shortcut: 'n',
                 required: true,
+                type: 'string',
               },
               locale: {
                 usage: 'First locale of the skill (e.g. "ja-JP", "en-US")',
                 shortcut: 'l',
                 required: true,
+                type: 'string',
               },
               type: {
                 usage: 'Type of the skill (e.g. "custom", "smartHome", "video")',
                 shortcut: 't',
                 required: true,
+                type: 'string',
               },
             },
           },
           delete: {
             usage: 'Delete an Alexa Skill',
-            lifecycleEvents: [
-              'delete',
-            ],
+            lifecycleEvents: ['delete'],
             options: {
               id: {
                 usage: 'Skill ID',
                 shortcut: 'i',
                 required: true,
+                type: 'string',
               },
             },
           },
           update: {
             usage: 'Update your Alexa Skill Manifests',
-            lifecycleEvents: [
-              'update',
-            ],
+            lifecycleEvents: ['update'],
             options: {
               dryRun: {
                 usage: 'Dry run (Only output the diff)',
                 shortcut: 'd',
+                type: 'boolean',
               },
             },
           },
           build: {
             usage: 'Update and buid your Alexa Interaction Models',
-            lifecycleEvents: [
-              'build',
-            ],
+            lifecycleEvents: ['build'],
             options: {
               dryRun: {
                 usage: 'Dry run (Only output the diff)',
                 shortcut: 'd',
+                type: 'boolean',
               },
             },
           },
