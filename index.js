@@ -28,6 +28,7 @@ const diffAccountLinkings = require('./lib/diffAccountLinkings');
 const outputAccountLinkingsDiff = require('./lib/outputAccountLinkingsDiff');
 const updateAccountLinkings = require('./lib/updateAccountLinkings');
 const outputUpdatedAccountLinkings = require('./lib/outputUpdatedAccountLinkings');
+const addSkillsToFunctions = require('./lib/addSkillsToFunctions');
 
 class AlexaSkills {
   constructor(serverless, options) {
@@ -63,7 +64,8 @@ class AlexaSkills {
       diffAccountLinkings,
       outputAccountLinkingsDiff,
       updateAccountLinkings,
-      outputUpdatedAccountLinkings
+      outputUpdatedAccountLinkings,
+      addSkillsToFunctions
     );
 
     this.commands = {
@@ -144,62 +146,54 @@ class AlexaSkills {
     };
 
     this.hooks = {
-      'before:package:createDeploymentArtifacts': () => BbPromise.bind(this)
-        .then(this.initialize)
-        .then(this.excludeTokenFile),
-      'alexa:auth:auth': () => BbPromise.bind(this)
-        .then(this.initialize)
-        .then(this.createHttpServer)
-        .then(this.openAuthorizationUri),
-      'alexa:manifests:list': () => BbPromise.bind(this)
-        .then(this.initialize)
-        .then(this.getRemoteSkills)
-        .then(this.outputSkills),
-      'alexa:models:list': () => BbPromise.bind(this)
-        .then(this.initialize)
-        .then(this.getRemoteModels)
-        .then(this.outputModels),
-      'alexa:create:create': () => BbPromise.bind(this)
-        .then(this.initialize)
-        .then(this.createSkill)
-        .then(this.outputSkillId),
-      'alexa:delete:delete': () => BbPromise.bind(this)
-        .then(this.initialize)
-        .then(this.deleteSkill),
-      'alexa:update:update': () => BbPromise.bind(this)
-        .then(this.initialize)
-        .then(this.getRemoteSkills)
-        .then(this.diffSkills)
-        .then(this.outputSkillsDiff)
-        .then(function (diffs) {
-          if (!('dryRun' in this.options)) {
-            return this.updateSkills(diffs);
-          }
-          return BbPromise.resolve();
-        })
-        .then(this.outputUpdatedSkillIds)
-        .then(this.getRemoteAccountLinkings)
-        .then(this.diffAccountLinkings)
-        .then(this.outputAccountLinkingsDiff)
-        .then(function (diffs) {
-          if (!('dryRun' in this.options)) {
-            return this.updateAccountLinkings(diffs);
-          }
-          return BbPromise.resolve();
-        })
-        .then(this.outputUpdatedAccountLinkings),
-      'alexa:build:build': () => BbPromise.bind(this)
-        .then(this.initialize)
-        .then(this.getRemoteModels)
-        .then(this.diffModels)
-        .then(this.outputModelsDiff)
-        .then(function (diffs) {
-          if (!('dryRun' in this.options)) {
-            return this.updateModels(diffs);
-          }
-          return BbPromise.resolve();
-        })
-        .then(this.outputUpdatedModels),
+      'before:package:createDeploymentArtifacts': () =>
+        BbPromise.bind(this).then(this.initialize).then(this.excludeTokenFile),
+      'before:package:finalize': () => BbPromise.bind(this).then(this.initialize).then(this.addSkillsToFunctions),
+      'alexa:auth:auth': () =>
+        BbPromise.bind(this).then(this.initialize).then(this.createHttpServer).then(this.openAuthorizationUri),
+      'alexa:manifests:list': () =>
+        BbPromise.bind(this).then(this.initialize).then(this.getRemoteSkills).then(this.outputSkills),
+      'alexa:models:list': () =>
+        BbPromise.bind(this).then(this.initialize).then(this.getRemoteModels).then(this.outputModels),
+      'alexa:create:create': () =>
+        BbPromise.bind(this).then(this.initialize).then(this.createSkill).then(this.outputSkillId),
+      'alexa:delete:delete': () => BbPromise.bind(this).then(this.initialize).then(this.deleteSkill),
+      'alexa:update:update': () =>
+        BbPromise.bind(this)
+          .then(this.initialize)
+          .then(this.getRemoteSkills)
+          .then(this.diffSkills)
+          .then(this.outputSkillsDiff)
+          .then(function (diffs) {
+            if (!('dryRun' in this.options)) {
+              return this.updateSkills(diffs);
+            }
+            return BbPromise.resolve();
+          })
+          .then(this.outputUpdatedSkillIds)
+          .then(this.getRemoteAccountLinkings)
+          .then(this.diffAccountLinkings)
+          .then(this.outputAccountLinkingsDiff)
+          .then(function (diffs) {
+            if (!('dryRun' in this.options)) {
+              return this.updateAccountLinkings(diffs);
+            }
+            return BbPromise.resolve();
+          })
+          .then(this.outputUpdatedAccountLinkings),
+      'alexa:build:build': () =>
+        BbPromise.bind(this)
+          .then(this.initialize)
+          .then(this.getRemoteModels)
+          .then(this.diffModels)
+          .then(this.outputModelsDiff)
+          .then(function (diffs) {
+            if (!('dryRun' in this.options)) {
+              return this.updateModels(diffs);
+            }
+            return BbPromise.resolve();
+          })
+          .then(this.outputUpdatedModels),
     };
   }
 }
