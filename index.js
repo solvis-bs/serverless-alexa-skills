@@ -29,6 +29,7 @@ const outputAccountLinkingsDiff = require('./lib/outputAccountLinkingsDiff');
 const updateAccountLinkings = require('./lib/updateAccountLinkings');
 const outputUpdatedAccountLinkings = require('./lib/outputUpdatedAccountLinkings');
 const addSkillsToFunctions = require('./lib/addSkillsToFunctions');
+const initSkills = require('./lib/initSkills');
 
 class AlexaSkills {
   constructor(serverless, options) {
@@ -65,7 +66,8 @@ class AlexaSkills {
       outputAccountLinkingsDiff,
       updateAccountLinkings,
       outputUpdatedAccountLinkings,
-      addSkillsToFunctions
+      addSkillsToFunctions,
+      initSkills
     );
 
     this.commands = {
@@ -119,6 +121,10 @@ class AlexaSkills {
               },
             },
           },
+          init: {
+            usage: 'Init your Alexa Skill Manifests',
+            lifecycleEvents: ['init'],
+          },
           update: {
             usage: 'Update your Alexa Skill Manifests',
             lifecycleEvents: ['update'],
@@ -158,6 +164,8 @@ class AlexaSkills {
       'alexa:create:create': () =>
         BbPromise.bind(this).then(this.initialize).then(this.createSkill).then(this.outputSkillId),
       'alexa:delete:delete': () => BbPromise.bind(this).then(this.initialize).then(this.deleteSkill),
+      'alexa:init:init': () =>
+        BbPromise.bind(this).then(this.initialize).then(this.getRemoteSkills).then(this.initSkills),
       'alexa:update:update': () =>
         BbPromise.bind(this)
           .then(this.initialize)
